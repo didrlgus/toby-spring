@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.dao.DUserDao;
+import com.example.dao.NUserDao;
 import com.example.dao.UserDao;
 import com.example.domain.User;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +13,7 @@ public class Application {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        UserDao dao = new UserDao();
+        UserDao dao = new DUserDao();
 
         User user = new User();
         user.setId("wade");
