@@ -4,12 +4,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class SimpleConnectionMaker {
+public class NConnectionMaker implements ConnectionMaker {
 
-    public Connection getConnection() throws ClassNotFoundException, SQLException {
+    @Override
+    public Connection makeConnection() throws ClassNotFoundException, SQLException {
+        // N 사의 독자적인 방법으로 connection을 생성하는 코드
         Class.forName("com.mysql.cj.jdbc.Driver");
 
         return DriverManager.getConnection("jdbc:mysql://localhost:3307/toby", "root", "abcd1234");
     }
-
 }
