@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.dao.DConnectionMaker;
 import com.example.dao.UserDao;
 import com.example.domain.User;
 import lombok.extern.slf4j.Slf4j;
@@ -7,14 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.SQLException;
 
 @Slf4j
-public class Application {
+public class UserDaoTest {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        UserDao dao = new UserDao();
+        UserDao dao = new UserDao(new DConnectionMaker());
 
         User user = new User();
-        user.setId("wade1");
+        user.setId("wade");
         user.setName("yang");
         user.setPassword("abcd1234");
 

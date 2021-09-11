@@ -8,9 +8,9 @@ public class UserDao {
 
     private ConnectionMaker connectionMaker;
 
-    public UserDao() {
+    public UserDao(ConnectionMaker connectionMaker) {
         // 여기서 또 구체화에 의존한다는 문제 발생
-        this.connectionMaker = new DConnectionMaker();
+        this.connectionMaker = connectionMaker;
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
