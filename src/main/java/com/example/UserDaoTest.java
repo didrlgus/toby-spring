@@ -1,18 +1,23 @@
 package com.example;
 
+import com.example.configuration.DaoFactory;
 import com.example.dao.DConnectionMaker;
 import com.example.dao.UserDao;
 import com.example.domain.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 @Slf4j
 public class UserDaoTest {
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-        UserDao dao = new UserDao(new DConnectionMaker());
+        ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+        UserDao dao = context.getBean("userDao", UserDao.class);
 
         User user = new User();
         user.setId("wade");

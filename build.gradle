@@ -12,6 +12,7 @@ repositories {
 dependencies {
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.26'
     implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.30'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.5.2'
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
     testCompileOnly 'org.projectlombok:lombok:1.18.20'
