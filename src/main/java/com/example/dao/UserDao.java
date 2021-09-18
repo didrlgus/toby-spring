@@ -2,15 +2,23 @@ package com.example.dao;
 
 import com.example.domain.User;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 public class UserDao {
 
-    public void add(User user) throws ClassNotFoundException, SQLException {
+//    private ConnectionMaker connectionMaker;
 
-        Class.forName("com.mysql.cj.jdbc.Driver");
+    private DataSource dataSource;
 
-        Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3307/toby", "root", "abcd1234");
+    public UserDao(DataSource dataSource) {
+
+        this.dataSource = dataSource;
+    }
+
+    public void add(User user) throws SQLException {
+
+        Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
         ps.setString(1, user.getId());
@@ -23,11 +31,9 @@ public class UserDao {
         c.close();
     }
 
-    public User get(String id) throws ClassNotFoundException, SQLException {
+    public User get(String id) throws SQLException {
 
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3307/toby", "root", "abcd1234");
+        Connection c = dataSource.getConnection();
 
         PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
         ps.setString(1, id);
