@@ -15,13 +15,13 @@ import java.util.Arrays;
 @Slf4j
 public class UserDaoTest {
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException {
 
         ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
         UserDao dao = context.getBean("userDao", UserDao.class);
 
         User user = new User();
-        user.setId("wade2");
+        user.setId("wade3");
         user.setName("yang");
         user.setPassword("abcd1234");
 
@@ -35,8 +35,8 @@ public class UserDaoTest {
         System.out.println("password: " + user2.getPassword());
         System.out.println(user.getId() + " 조회 성공");
 
-        CountingConnectionMaker ccm = context.getBean("connectionMaker", CountingConnectionMaker.class);
-        System.out.println("Connection counter: " + ccm.getCounter());
+//        CountingConnectionMaker ccm = context.getBean("connectionMaker", CountingConnectionMaker.class);
+//        System.out.println("Connection counter: " + ccm.getCounter());
     }
 
 }
