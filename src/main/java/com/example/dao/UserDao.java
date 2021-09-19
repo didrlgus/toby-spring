@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Component
 public class UserDao {
@@ -67,32 +68,69 @@ public class UserDao {
 
     public void deleteAll() throws SQLException {
 
-        Connection c = dataSource.getConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
 
-        PreparedStatement ps = c.prepareStatement("delete from users");
-
-        ps.executeUpdate();
-
-        ps.close();
-        c.close();
+        try {
+            c = dataSource.getConnection();
+            ps = c.prepareStatement("delete from users");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (nonNull(ps)) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (nonNull(c)) {
+                try {
+                    c.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
     }
 
     public int getCount() throws SQLException {
 
-        Connection c = dataSource.getConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-        PreparedStatement ps = c.prepareStatement("select count(*) from users");
+        try {
+            c = dataSource.getConnection();
 
-        ResultSet rs = ps.executeQuery();
-        rs.next();
+            ps = c.prepareStatement("select count(*) from users");
 
-        int count = rs.getInt(1);
+            rs = ps.executeQuery();
+            rs.next();
 
-        rs.close();
-        ps.close();
-        c.close();
+            return rs.getInt(1);
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (nonNull(rs)) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (nonNull(ps)) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (nonNull(c)) {
+                try {
+                    c.close();
+                } catch (SQLException e) {
+                }
+            }
 
-        return count;
+        }
     }
 
 }
