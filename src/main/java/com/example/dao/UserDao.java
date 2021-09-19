@@ -13,9 +13,7 @@ import static java.util.Objects.nonNull;
 @Component
 public class UserDao {
 
-//    private ConnectionMaker connectionMaker;
-
-    private DataSource dataSource;
+    private final DataSource dataSource;
 
     public UserDao(DataSource dataSource) {
 
@@ -24,40 +22,79 @@ public class UserDao {
 
     public void add(User user) throws SQLException {
 
-        Connection c = dataSource.getConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
 
-        PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
+        try {
+            c = dataSource.getConnection();
 
-        ps.executeUpdate();
+            ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
+            ps.setString(1, user.getId());
+            ps.setString(2, user.getName());
+            ps.setString(3, user.getPassword());
 
-        ps.close();
-        c.close();
+            ps.executeUpdate();
+        } catch(SQLException e) {
+            throw e;
+        } finally {
+            if (nonNull(ps)) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (nonNull(c)) {
+                try {
+                    c.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
     }
 
     public User get(String id) throws SQLException {
 
-        Connection c = dataSource.getConnection();
-
-        PreparedStatement ps = c.prepareStatement("select * from users where id = ?");
-        ps.setString(1, id);
-
-        ResultSet rs = ps.executeQuery();
-
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         User user = null;
 
-        if (rs.next()) {
-            user = new User();
-            user.setId(rs.getString("id"));
-            user.setName(rs.getString("name"));
-            user.setPassword(rs.getString("password"));
-        }
+        try {
+            c = dataSource.getConnection();
 
-        rs.close();
-        ps.close();
-        c.close();
+            ps = c.prepareStatement("select * from users where id = ?");
+            ps.setString(1, id);
+
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getString("id"));
+                user.setName(rs.getString("name"));
+                user.setPassword(rs.getString("password"));
+            }
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (nonNull(rs)) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (nonNull(ps)) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (nonNull(c)) {
+                try {
+                    c.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
 
         if (isNull(user)) {
             throw new EmptyResultDataAccessException(1);
@@ -129,7 +166,6 @@ public class UserDao {
                 } catch (SQLException e) {
                 }
             }
-
         }
     }
 
