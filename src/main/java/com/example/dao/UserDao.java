@@ -105,29 +105,9 @@ public class UserDao {
 
     public void deleteAll() throws SQLException {
 
-        Connection c = null;
-        PreparedStatement ps = null;
+        StatementStrategy st = new DeleteAllStatement();
 
-        try {
-            c = dataSource.getConnection();
-            ps = c.prepareStatement("delete from users");
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (nonNull(ps)) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (nonNull(c)) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
+        jdbcContextWithStatementStrategy(st);
     }
 
     public int getCount() throws SQLException {
@@ -154,6 +134,34 @@ public class UserDao {
                 } catch (SQLException e) {
                 }
             }
+            if (nonNull(ps)) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (nonNull(c)) {
+                try {
+                    c.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
+    }
+
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+        Connection c = null;
+        PreparedStatement ps = null;
+
+        try {
+            c = dataSource.getConnection();
+
+            ps = stmt.makePreparedStatement(c);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
             if (nonNull(ps)) {
                 try {
                     ps.close();
