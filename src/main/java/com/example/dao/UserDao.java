@@ -10,19 +10,19 @@ import java.sql.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-@Component
 public class UserDao {
 
+    private final JdbcContext jdbcContext;
     private final DataSource dataSource;
 
-    public UserDao(DataSource dataSource) {
-
+    public UserDao(JdbcContext jdbcContext, DataSource dataSource) {
+        this.jdbcContext = jdbcContext;
         this.dataSource = dataSource;
     }
 
     public void add(User user) throws SQLException {
 
-        jdbcContextWithStatementStrategy(c -> {
+        jdbcContext.workWithStatementStrategy(c -> {
             PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
             ps.setString(1, user.getId());
             ps.setString(2, user.getName());
@@ -85,8 +85,9 @@ public class UserDao {
 
     public void deleteAll() throws SQLException {
 
-        jdbcContextWithStatementStrategy(c -> c.prepareStatement("delete from users"));
+        jdbcContext.executeSql("delete from users");
     }
+
 
     public int getCount() throws SQLException {
 
@@ -112,34 +113,6 @@ public class UserDao {
                 } catch (SQLException e) {
                 }
             }
-            if (nonNull(ps)) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (nonNull(c)) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
-    }
-
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-
-        try {
-            c = dataSource.getConnection();
-
-            ps = stmt.makePreparedStatement(c);
-
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
             if (nonNull(ps)) {
                 try {
                     ps.close();
