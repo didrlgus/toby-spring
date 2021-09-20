@@ -1,7 +1,11 @@
 package com.example.dao;
 
 import com.example.domain.User;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -14,22 +18,26 @@ public class UserDao {
 
     private final JdbcContext jdbcContext;
     private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
 
-    public UserDao(JdbcContext jdbcContext, DataSource dataSource) {
+    public UserDao(JdbcContext jdbcContext, DataSource dataSource, JdbcTemplate jdbcTemplate) {
         this.jdbcContext = jdbcContext;
         this.dataSource = dataSource;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public void add(User user) throws SQLException {
 
-        jdbcContext.workWithStatementStrategy(c -> {
-            PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
-            ps.setString(1, user.getId());
-            ps.setString(2, user.getName());
-            ps.setString(3, user.getPassword());
+//        jdbcContext.workWithStatementStrategy(c -> {
+//            PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?,?,?)");
+//            ps.setString(1, user.getId());
+//            ps.setString(2, user.getName());
+//            ps.setString(3, user.getPassword());
+//
+//            return ps;
+//        });
 
-            return ps;
-        });
+        this.jdbcTemplate.update("insert into users(id, name, password) values(?,?,?)", user.getId(), user.getName(), user.getPassword());
     }
 
     public User get(String id) throws SQLException {
@@ -85,47 +93,54 @@ public class UserDao {
 
     public void deleteAll() throws SQLException {
 
-        jdbcContext.executeSql("delete from users");
+        this.jdbcTemplate.update("delete from users");
     }
 
 
     public int getCount() throws SQLException {
 
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+//        Connection c = null;
+//        PreparedStatement ps = null;
+//        ResultSet rs = null;
+//
+//        try {
+//            c = dataSource.getConnection();
+//
+//            ps = c.prepareStatement("select count(*) from users");
+//
+//            rs = ps.executeQuery();
+//            rs.next();
+//
+//            return rs.getInt(1);
+//        } catch (SQLException e) {
+//            throw e;
+//        } finally {
+//            if (nonNull(rs)) {
+//                try {
+//                    rs.close();
+//                } catch (SQLException e) {
+//                }
+//            }
+//            if (nonNull(ps)) {
+//                try {
+//                    ps.close();
+//                } catch (SQLException e) {
+//                }
+//            }
+//            if (nonNull(c)) {
+//                try {
+//                    c.close();
+//                } catch (SQLException e) {
+//                }
+//            }
+//        }
 
-        try {
-            c = dataSource.getConnection();
-
-            ps = c.prepareStatement("select count(*) from users");
-
-            rs = ps.executeQuery();
-            rs.next();
-
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (nonNull(rs)) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (nonNull(ps)) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (nonNull(c)) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
+        return this.jdbcTemplate.query(
+                con -> con.prepareStatement("select count(*) from users"),
+                rs -> {
+                    rs.next();
+                    return rs.getInt(1);
+                });
     }
 
 }

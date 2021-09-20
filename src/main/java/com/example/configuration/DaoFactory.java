@@ -3,6 +3,7 @@ package com.example.configuration;
 import com.example.dao.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import javax.sql.DataSource;
@@ -13,7 +14,13 @@ public class DaoFactory {
     @Bean
     public UserDao userDao() {
 
-        return new UserDao(jdbcContext(), dataSource());
+        return new UserDao(jdbcContext(), dataSource(), jdbcTemplate());
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate() {
+
+        return new JdbcTemplate(dataSource());
     }
 
     @Bean
