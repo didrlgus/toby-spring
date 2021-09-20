@@ -1,11 +1,9 @@
 package com.example.configuration;
 
-import com.example.dao.ConnectionMaker;
-import com.example.dao.CountingConnectionMaker;
-import com.example.dao.DConnectionMaker;
-import com.example.dao.UserDao;
+import com.example.dao.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import javax.sql.DataSource;
@@ -16,7 +14,19 @@ public class DaoFactory {
     @Bean
     public UserDao userDao() {
 
-        return new UserDao(dataSource());
+        return new UserDao(jdbcContext(), dataSource(), jdbcTemplate());
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate() {
+
+        return new JdbcTemplate(dataSource());
+    }
+
+    @Bean
+    public JdbcContext jdbcContext() {
+
+        return new JdbcContext(dataSource());
     }
 
     @Bean
