@@ -1,6 +1,7 @@
 package com.example.configuration;
 
 import com.example.dao.*;
+import com.example.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,9 +13,15 @@ import javax.sql.DataSource;
 public class DaoFactory {
 
     @Bean
+    public UserService userService() {
+
+        return new UserService(userDao());
+    }
+
+    @Bean
     public UserDao userDao() {
 
-        return new UserDao(jdbcContext(), dataSource(), jdbcTemplate());
+        return new UserDaoJdbc(jdbcContext(), dataSource(), jdbcTemplate());
     }
 
     @Bean
